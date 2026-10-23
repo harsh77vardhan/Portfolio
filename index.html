@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harsh Vardhan Singh — Portfolio</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800;900&family=Playfair+Display:ital,wght@0,600;1,400;1,600&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Lenis CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.18/dist/lenis.css">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ================= PRELOADER ================= -->
+  <div id="preloader" class="preloader">
+    <div class="preloader-content">
+      <svg class="preloader-svg" viewBox="0 0 400 400" width="340" height="340">
+        <defs>
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <!-- Background guide outline: Modern H shape -->
+        <path class="preloader-path-bg"
+          d="M 70,50 L 120,50 Q 130,50 130,60 L 130,165 Q 130,175 140,175 L 260,175 Q 270,175 270,165 L 270,60 Q 270,50 280,50 L 330,50 Q 340,50 340,60 L 340,340 Q 340,350 330,350 L 280,350 Q 270,350 270,340 L 270,235 Q 270,225 260,225 L 140,225 Q 130,225 130,235 L 130,340 Q 130,350 120,350 L 70,350 Q 60,350 60,340 L 60,60 Q 60,50 70,50 Z"
+          fill="none" stroke="rgba(255, 42, 59, 0.16)" stroke-width="1.8" />
+
+        <!-- Animated stroke path: Modern H shape -->
+        <path id="preloader-stroke" class="preloader-path"
+          d="M 70,50 L 120,50 Q 130,50 130,60 L 130,165 Q 130,175 140,175 L 260,175 Q 270,175 270,165 L 270,60 Q 270,50 280,50 L 330,50 Q 340,50 340,60 L 340,340 Q 340,350 330,350 L 280,350 Q 270,350 270,340 L 270,235 Q 270,225 260,225 L 140,225 Q 130,225 130,235 L 130,340 Q 130,350 120,350 L 70,350 Q 60,350 60,340 L 60,60 Q 60,50 70,50 Z"
+          fill="none" stroke="#ff2a3b" stroke-width="2.5" filter="url(#glow)" />
+
+        <!-- Glowing head tracker -->
+        <circle id="preloader-dot" r="4.5" fill="#ff4d5e" filter="url(#glow)" />
+      </svg>
+      <div class="preloader-title" id="preloader-title">
+        <span class="pre-char">H</span>
+        <span class="pre-char">A</span>
+        <span class="pre-char">R</span>
+        <span class="pre-char">S</span>
+        <span class="pre-char">H</span>
+        <span class="dot">.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-logo">HARSH</a>
+
+      <nav class="nav-links">
+        <a href="#hero" class="nav-link active">HOME</a>
+        <a href="#about" class="nav-link">ABOUT ME</a>
+        <a href="#experience" class="nav-link">EXPERIENCE</a>
+        <a href="#works" class="nav-link">PROJECTS</a>
+        <a href="#landing-pages" class="nav-link">LANDING PAGES</a>
+        <a href="#services" class="nav-link">SERVICES</a>
+      </nav>
+
+      <div class="nav-socials">
+        <a href="https://www.instagram.com/hydrogen_0__/" target="_blank" rel="noopener" aria-label="Instagram"
+          class="social-icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+        </a>
+        <a href="https://x.com/harsh_vs_0" target="_blank" rel="noopener" aria-label="Twitter / X" class="social-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/in/harsh-singh-0aba76360/" target="_blank" rel="noopener"
+          aria-label="LinkedIn" class="social-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+            <rect x="2" y="9" width="4" height="12"></rect>
+            <circle cx="4" cy="4" r="2"></circle>
+          </svg>
+        </a>
+        <a href="https://github.com/dashboard" target="_blank" rel="noopener" aria-label="GitHub" class="social-icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+            </path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main id="smooth-content">
+
+    <!-- SECTION 1: HERO -->
+    <section class="section section-hero" id="hero">
+      <div class="hero-inner">
+
+        <!-- Big Centered Typography -->
+        <div class="hero-title-container">
+          <h1 class="hero-title" id="hero-title">
+            <span class="hero-line hero-line-top">EXPLORE MY</span>
+            <span class="hero-line hero-line-bottom">PORTFOLIO</span>
+          </h1>
+        </div>
+
+        <!-- Cutout Crown Profile Silhouette -->
+        <div class="hero-portrait-wrapper" id="hero-portrait">
+          <div class="hero-portrait-inner" id="hero-portrait-inner">
+            <div class="hero-portrait-glow"></div>
+            <img src="images/hero-profile.png" alt="Profile Silhouette" class="hero-portrait-img">
+          </div>
+        </div>
+
+        <!-- Corner Accents -->
+        <div class="hero-corner-left">
+          <span class="hero-caption">AI ENGINEER IN PROGRESS</span>
+
+        </div>
+
+        <div class="hero-corner-right">
+          <p class="hero-mission">
+            I TURN COFFEE INTO CODE<br>
+            AND RANDOM IDEAS INTO<br>
+            WEBSITES , OFC USING AI
+          </p>
+          <div class="hero-tags">
+            <span>UI/UX</span>
+            <span>WEB DESIGN</span>
+            <span>LANDING PAGE</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 2: ABOUT ME / SPOTLIGHT PORTAL -->
+    <section class="section section-about" id="about">
+      <!-- Dark Matrix Backdrop -->
+      <div class="about-backdrop">
+        <img src="images/bg133.jpg" alt="Dark Matrix Art" class="about-backdrop-img">
+        <div class="about-backdrop-overlay"></div>
+      </div>
+
+      <div class="about-content-wrapper">
+        <!-- Split Title -->
+        <div class="about-title-container">
+          <span class="about-split-word word-about">ABOUT</span>
+
+          <!-- Center Portal Card -->
+          <div class="about-portal-card" id="about-portal-card">
+            <div class="portal-inner">
+              <img src="images/bg122.jpg" alt="Sculpture Art" class="spotlight-img">
+            </div>
+          </div>
+
+          <span class="about-split-word word-me">ME</span>
+        </div>
+
+        <!-- Details Bar Below Portal -->
+        <div class="about-details" id="about-details">
+          <div class="about-text-col">
+            <div class="about-discipline">
+              CODE & CREATION — <span>FULL STACK • AI • WEB DEVELOPMENT • UI DESIGN</span>
+            </div>
+            <p class="about-statement">
+              I BUILD MODERN DIGITAL EXPERIENCES WHERE CREATIVE DESIGN MEETS INTELLIGENT ENGINEERING, CRAFTING WEBSITES
+              AND PRODUCTS THAT ARE FUNCTIONAL, INTERACTIVE, AND BUILT FOR THE FUTURE.
+            </p>
+          </div>
+
+          <div class="about-actions-col">
+            <a href="#contact" class="btn btn-white">GET IN TOUCH →</a>
+            <a href="#services" class="btn btn-outline">SERVICES</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: EXPERIENCE / WHERE I'VE BEEN -->
+    <section class="section section-experience" id="experience">
+      <!-- Kinetic Watermark Running in Background -->
+      <div class="exp-watermark-track">
+        <div class="exp-watermark-inner" id="exp-watermark-text">
+          CREATIVE TECHNOLOGIST 2023 - 2025 SELF-DIRECTED LEARNING • FULL STACK DEVELOPER 2024 - PRESENT COMMERCIAL •
+        </div>
+      </div>
+
+      <div class="exp-container">
+        <!-- Left Column: Title & Controls -->
+        <div class="exp-header-col">
+          <span class="exp-meta-label">ORIGIN & FOUNDATIONS</span>
+          <div class="exp-badge">FOUNDATION & JOURNEY</div>
+
+          <h2 class="exp-heading">
+            <span class="chroma-text" data-text="WHERE">WHERE</span><br>
+            <span class="chroma-text" data-text="I'VE BEEN">I'VE BEEN</span>
+          </h2>
+
+          <p class="exp-desc">
+            My professional journey through different roles and environments.
+          </p>
+
+          <!-- Interactive Switcher -->
+          <div class="exp-tabs">
+            <button class="exp-tab-btn active" data-role="learning">LEARNING</button>
+            <button class="exp-tab-btn" data-role="freelance">FREELANCE</button>
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive Role Cards -->
+        <div class="exp-cards-col">
+
+          <!-- Card 1: Self-Directed Learning -->
+          <div class="exp-card active" id="card-learning">
+            <div class="exp-card-header">
+              <span class="exp-years">2026</span>
+              <span class="exp-divider">—</span>
+              <span class="exp-type">SELF-DIRECTED LEARNING</span>
+            </div>
+
+            <h3 class="exp-role-title">CREATIVE<br>TECHNOLOGIST</h3>
+
+            <p class="exp-role-summary">
+              Intensive self-education period exploring web technologies, creative coding, and modern development
+              practices.
+            </p>
+
+            <div class="exp-milestones">
+              <div class="milestone-item">
+                <span class="milestone-num">MILESTONE 01</span>
+                <p class="milestone-text">Completed 100+ hours of hands-on development</p>
+              </div>
+              <div class="milestone-item">
+                <span class="milestone-num">MILESTONE 02</span>
+                <p class="milestone-text">Mastered AI python web dev ecosystem</p>
+              </div>
+              <div class="milestone-item">
+                <span class="milestone-num">MILESTONE 03</span>
+                <p class="milestone-text">Built portfolio of my own</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Freelance / Independent -->
+          <div class="exp-card" id="card-freelance">
+            <div class="exp-card-header">
+              <span class="exp-years">2026 — PRESENT</span>
+              <span class="exp-divider">—</span>
+              <span class="exp-type">FREELANCE / INDEPENDENT</span>
+              <span class="exp-tag-commercial">COMMERCIAL</span>
+            </div>
+
+            <h3 class="exp-role-title">FULL STACK<br>DEVELOPER</h3>
+
+            <p class="exp-role-summary">
+              Building premium web experiences for clients worldwide. Specializing in interactive frontends, scalable
+              backends, and AI-powered applications.
+            </p>
+
+            <div class="exp-milestones">
+              <div class="milestone-item">
+                <span class="milestone-num">DELIVERY</span>
+                <p class="milestone-text">Delivered only 1projects across diverse industries(c'on guys i'm just
+                  starting)</p>
+              </div>
+
+              <div class="milestone-item">
+                <span class="milestone-num">TECHNEA</span>
+                <p class="milestone-text">Created custom animation systems with GSAP and lenim a massive database </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: FEATURED PROJECT / 3D CYLINDER CAROUSEL ("LANDING PAGES") -->
+    <section class="section section-landing" id="landing-pages">
+      <div class="landing-header">
+        <span class="section-top-label">FEATURED PROJECT (did't really have any ,so instead you get to know my top 5)</span>
+        <h2 class="landing-section-title">TOP 5</h2>
+      </div>
+
+      <!-- 3D Cylindrical Carousel Viewport -->
+      <div class="carousel-3d-stage" id="carousel-3d-stage">
+        <div class="carousel-3d-track" id="carousel-3d-track">
+
+          <!-- Card 1 -->
+          <div class="carousel-card" data-index="0" data-title="seven">
+            <div class="card-inner">
+              <img src="images/s7.png" alt="seven" >
+            </div>
+          </div>
+          
+
+          <!-- Card 2 -->
+          <div class="carousel-card" data-index="1" data-title="wiplash">
+            <div class="card-inner">
+              <img src="/images/w.png" alt="wiplash" >
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="carousel-card" data-index="2" data-title="scarface"
+            >
+            <div class="card-inner">
+              <img src="/images/sf.png" alt="scarface">
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="carousel-card" data-index="3" data-title="lunchbox"
+            >
+            <div class="card-inner">
+              <img src="/images/lb.png" alt="lunchbox">
+            </div>
+          </div>
+
+          <!-- Card 5 -->
+          <div class="carousel-card" data-index="4" data-title="batman">
+            <div class="card-inner">
+              <img src="/images/bat1.jpeg" alt="batman">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Card Metadata Display -->
+      <div class="carousel-meta-footer">
+        <div class="carousel-active-info" id="carousel-info">
+          <div class="active-title" id="carousel-title">seven</div>
+          <div class="active-sub" id="carousel-sub">Interactive 3D Showcase</div>
+          <div class="active-counter" id="carousel-num">01 / 05</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: WORKS '26 / 3D DRUM SHOWCASE -->
+    <section class="section section-works" id="works">
+      <div class="works-pinned-container" id="works-pinned">
+
+        <!-- Left: Dynamic Active Project Title -->
+        <div class="works-left-col">
+          <h2 class="works-active-heading" id="drum-active-heading">TECHNEA HERO</h2>
+        </div>
+
+        <!-- Center: 3D Revolving Hexagonal Drum -->
+        <div class="works-center-col">
+          <div class="drum-viewport" id="drum-viewport">
+            <div class="drum-cylinder" id="drum-cylinder">
+
+              <!-- Drum Face 1: Technea Hero -->
+              <div class="drum-face" data-index="0" data-name="TECHNEA HERO">
+                <div class="browser-mockup-card img-card">
+                  <div class="mockup-header">
+                    <span class="dot-btn red"></span>
+                    <span class="dot-btn yellow"></span>
+                    <span class="dot-btn green"></span>
+                    <span class="mockup-url">technea.ai/hero</span>
+                  </div>
+                  <img src="images/landing-shot-1.png" alt="Technea Hero" class="drum-card-bg">
+                </div>
+              </div>
+
+              <!-- Drum Face 2: Technea Architecture -->
+              <div class="drum-face" data-index="1" data-name="TECHNEA ARCHITECTURE">
+                <div class="browser-mockup-card img-card">
+                  <div class="mockup-header">
+                    <span class="dot-btn red"></span>
+                    <span class="dot-btn yellow"></span>
+                    <span class="dot-btn green"></span>
+                    <span class="mockup-url">technea.ai/architecture</span>
+                  </div>
+                  <img src="images/landing-shot-2.png" alt="Technea Architecture" class="drum-card-bg">
+                </div>
+              </div>
+
+              <!-- Drum Face 3: Technea Curriculum -->
+              <div class="drum-face" data-index="2" data-name="TECHNEA CURRICULUM">
+                <div class="browser-mockup-card img-card">
+                  <div class="mockup-header">
+                    <span class="dot-btn red"></span>
+                    <span class="dot-btn yellow"></span>
+                    <span class="dot-btn green"></span>
+                    <span class="mockup-url">technea.ai/curriculum</span>
+                  </div>
+                  <img src="images/landing-shot-3.png" alt="Technea Curriculum" class="drum-card-bg">
+                </div>
+              </div>
+
+              <!-- Drum Face 4: Technea Hero (Loop) -->
+              <div class="drum-face" data-index="3" data-name="TECHNEA HERO">
+                <div class="browser-mockup-card img-card">
+                  <div class="mockup-header">
+                    <span class="dot-btn red"></span>
+                    <span class="dot-btn yellow"></span>
+                    <span class="dot-btn green"></span>
+                    <span class="mockup-url">technea.ai/hero</span>
+                  </div>
+                  <img src="images/landing-shot-1.png" alt="Technea Hero" class="drum-card-bg">
+                </div>
+              </div>
+
+              <!-- Drum Face 5: Technea Architecture (Loop) -->
+              <div class="drum-face" data-index="4" data-name="TECHNEA ARCHITECTURE">
+                <div class="browser-mockup-card img-card">
+                  <div class="mockup-header">
+                    <span class="dot-btn red"></span>
+                    <span class="dot-btn yellow"></span>
+                    <span class="dot-btn green"></span>
+                    <span class="mockup-url">technea.ai/architecture</span>
+                  </div>
+                  <img src="images/landing-shot-2.png" alt="Technea Architecture" class="drum-card-bg">
+                </div>
+              </div>
+
+              <!-- Drum Face 6: Technea Curriculum (Loop) -->
+              <div class="drum-face" data-index="5" data-name="TECHNEA CURRICULUM">
+                <div class="browser-mockup-card img-card">
+                  <div class="mockup-header">
+                    <span class="dot-btn red"></span>
+                    <span class="dot-btn yellow"></span>
+                    <span class="dot-btn green"></span>
+                    <span class="mockup-url">technea.ai/curriculum</span>
+                  </div>
+                  <img src="images/landing-shot-3.png" alt="Technea Curriculum" class="drum-card-bg">
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="drum-central-label" id="drum-central-label">WORKS '26</div>
+
+          <!-- Drag / Scroll Hint -->
+          <div class="drum-hint-pill">
+            <span>↓ SCROLL OR DRAG DRUM TO CYCLE</span>
+          </div>
+        </div>
+
+        <!-- Right: Interactive Project Menu List -->
+        <div class="works-right-col">
+          <ul class="drum-project-list" id="drum-menu-list">
+            <li class="drum-nav-item active" data-index="0">Technea Hero</li>
+            <li class="drum-nav-item" data-index="1">Technea Architecture</li>
+            <li class="drum-nav-item" data-index="2">Technea Curriculum</li>
+            <li class="drum-nav-item" data-index="3">Technea Hero</li>
+            <li class="drum-nav-item" data-index="4">Technea Architecture</li>
+            <li class="drum-nav-item" data-index="5">Technea Curriculum</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 6: SERVICES ACCORDION -->
+    <section class="section section-services" id="services">
+      <div class="services-container">
+
+        <div class="services-header">
+          <h2 class="services-title">THE SERVICES I PROVIDE</h2>
+          <p class="services-subtitle">
+            CREATING VISUALLY APPEALING AND FUNCTIONAL WEBSITES TAILORED TO THE CLIENT'S NEEDS AND GOALS. PROVIDING A
+            CONSISTENT USER EXPERIENCE ACROSS PLATFORMS.
+          </p>
+        </div>
+
+        <div class="services-accordion" id="services-accordion">
+
+          <!-- Item 1 -->
+          <div class="accordion-item" data-item="1">
+            <button class="accordion-header" aria-expanded="false">
+              <span class="accordion-num">1</span>
+              <span class="accordion-label">UI/UX</span>
+              <span class="accordion-arrow">∨</span>
+            </button>
+            <div class="accordion-body">
+              <div class="accordion-body-inner">
+                <p class="accordion-text">
+                  User research, intuitive information architecture, high-fidelity wireframing, and interactive
+                  prototyping. Designed to elevate brand perception and ensure effortless navigation.
+                </p>
+                <div class="accordion-footer-row">
+                  <span class="deliverables-line">DELIVERABLES: USER FLOWS, WIREFRAMES, FIGMA DESIGN SYSTEM, INTERACTIVE
+                    PROTOTYPE</span>
+                  <a href="#contact" class="inquire-link">INQUIRE ↗</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="accordion-item" data-item="2">
+            <button class="accordion-header" aria-expanded="false">
+              <span class="accordion-num">2</span>
+              <span class="accordion-label">WEB DESIGN</span>
+              <span class="accordion-arrow">∨</span>
+            </button>
+            <div class="accordion-body">
+              <div class="accordion-body-inner">
+                <p class="accordion-text">
+                  Award-worthy responsive web design marrying bespoke typography with refined art direction. Clean grid
+                  systems that captivate visitors from the first second.
+                </p>
+                <div class="accordion-footer-row">
+                  <span class="deliverables-line">DELIVERABLES: CREATIVE DIRECTION, RESPONSIVE LAYOUTS, ASSET
+                    PRODUCTION, STYLE GUIDES</span>
+                  <a href="#contact" class="inquire-link">INQUIRE ↗</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 3: Default Open -->
+          <div class="accordion-item active" data-item="3">
+            <button class="accordion-header" aria-expanded="true">
+              <span class="accordion-num">3</span>
+              <span class="accordion-label">LANDING PAGE DESIGN</span>
+              <span class="accordion-arrow">∧</span>
+            </button>
+            <div class="accordion-body">
+              <div class="accordion-body-inner">
+                <p class="accordion-text">
+                  High-converting editorial landing pages tailored for startups, product launches, and personal brands.
+                  Engineered to capture attention and boost conversions.
+                </p>
+                <div class="accordion-footer-row">
+                  <span class="deliverables-line">DELIVERABLES: COPYWRITING STRUCTURE, CUSTOM 3D/GRAPHICS, WEBFLOW
+                    CODE</span>
+                  <a href="#contact" class="inquire-link">INQUIRE ↗</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 7: FOOTER / LET'S TALK -->
+    <footer class="section section-footer" id="contact">
+      <div class="footer-card">
+
+        <div class="footer-main-content">
+          <h2 class="footer-title" id="footer-title">LET'S TALK</h2>
+
+          <div class="footer-buttons-cluster">
+            <a href="https://www.instagram.com/hydrogen_0__/" target="_blank" rel="noopener"
+              class="pill-btn">INSTAGRAM</a>
+            <a href="https://x.com/harsh_vs_0" target="_blank" rel="noopener" class="pill-btn">X (TWITTER)</a>
+            <a href="https://www.linkedin.com/in/harsh-singh-0aba76360/" target="_blank" rel="noopener"
+              class="pill-btn">LINKEDIN</a>
+            <a href="https://github.com/dashboard" target="_blank" rel="noopener" class="pill-btn">GITHUB</a>
+            <a href="mailto:contact@jishnumondal.com" class="pill-btn pill-btn-primary">CONTACT ME</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- ================= SCRIPTS ================= -->
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
+  <!-- GSAP Core & Plugins -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
+
+  <!-- Main JavaScript Application -->
+  <script src="script.js"></script>
+
+</body>
+
+</html>
