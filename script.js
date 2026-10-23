@@ -727,4 +727,413 @@ document.addEventListener('DOMContentLoaded', () => {
     ScrollTrigger.refresh();
   });
 
+  // ==========================================
+  // 12. LET'S TALK RED LIQUID PHYSICS SIMULATION
+  // ==========================================
+  function initFooterLiquid() {
+    const canvas = document.getElementById('footer-liquid-canvas');
+    const card = document.querySelector('.footer-card');
+    if (!canvas || !card) return;
+
+    const ctx = canvas.getContext('2d');
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+
+    // Simulation constants
+    const TENSION = 0.024;        // Spring stiffness
+    const DAMPING = 0.038;        // Viscous damping
+    const SPREAD = 0.22;          // Neighbor wave propagation
+    const SPREAD_PASSES = 8;      // Dispersion passes per frame
+    const BASE_FILL_RATIO = 0.58; // Liquid baseline rests cleanly between title and buttons
+
+    let numNodes = 0;
+    let nodes = [];
+    let leftDeltas = [];
+    let rightDeltas = [];
+
+    // Sloshing & Tilt parameters (sensors & inertia)
+    let sloshAngle = 0;
+    let sloshVel = 0;
+    const TILT_SPRING = 0.028;
+    const TILT_DAMP = 0.065;
+    let targetTilt = 0;
+    let sensorAvailable = false;
+
+    // Underwater rising bubbles
+    let bubbles = [];
+    const MAX_BUBBLES = 40;
+
+    // Mouse & Touch interaction tracking
+    const mouse = {
+      x: -1000,
+      y: -1000,
+      prevX: -1000,
+      prevY: -1000,
+      vx: 0,
+      vy: 0,
+      isInside: false,
+      lastTime: performance.now()
+    };
+
+    function resize() {
+      const rect = card.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+      width = rect.width;
+      height = rect.height;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+
+      initNodes();
+    }
+
+    function initNodes() {
+      numNodes = Math.max(45, Math.min(150, Math.floor(width / 11)));
+      nodes = [];
+      leftDeltas = new Float32Array(numNodes);
+      rightDeltas = new Float32Array(numNodes);
+
+      const baseLevel = height * BASE_FILL_RATIO;
+      for (let i = 0; i < numNodes; i++) {
+        const x = (i / (numNodes - 1)) * width;
+        nodes.push({
+          x: x,
+          y: baseLevel,
+          targetY: baseLevel,
+          vel: 0
+        });
+      }
+
+      // Seed initial bubbles
+      bubbles = [];
+      for (let i = 0; i < 16; i++) {
+        spawnBubble(
+          Math.random() * width,
+          baseLevel + 20 + Math.random() * (height - baseLevel - 30)
+        );
+      }
+    }
+
+    function disturb(x, force, radius = 85) {
+      if (numNodes === 0) return;
+      for (let i = 0; i < numNodes; i++) {
+        const dist = Math.abs(nodes[i].x - x);
+        if (dist < radius) {
+          const factor = 0.5 * (1 + Math.cos((Math.PI * dist) / radius));
+          nodes[i].vel += force * factor;
+        }
+      }
+    }
+
+    function spawnBubble(x, y) {
+      if (bubbles.length >= MAX_BUBBLES) return;
+      bubbles.push({
+        x: x !== undefined ? x : Math.random() * width,
+        y: y !== undefined ? y : (height - 15 - Math.random() * 30),
+        radius: 1.5 + Math.random() * 3.2,
+        vy: -0.8 - Math.random() * 1.5,
+        wobbleSpeed: 0.035 + Math.random() * 0.06,
+        wobbleAmp: 1.0 + Math.random() * 2.0,
+        phase: Math.random() * Math.PI * 2,
+        alpha: 0.35 + Math.random() * 0.45
+      });
+    }
+
+    // Interactive pointer events on the footer card
+    card.addEventListener('pointerenter', (e) => {
+      mouse.isInside = true;
+      const rect = card.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+      mouse.prevX = mouse.x;
+      mouse.prevY = mouse.y;
+      mouse.lastTime = performance.now();
+      disturb(mouse.x, -8, 90);
+    });
+
+    card.addEventListener('pointermove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const currentX = e.clientX - rect.left;
+      const currentY = e.clientY - rect.top;
+      const now = performance.now();
+      const dt = Math.max(1, now - mouse.lastTime);
+      mouse.lastTime = now;
+
+      mouse.vx = ((currentX - mouse.x) / dt) * 16;
+      mouse.vy = ((currentY - mouse.y) / dt) * 16;
+      mouse.x = currentX;
+      mouse.y = currentY;
+      mouse.isInside = true;
+
+      const speed = Math.hypot(mouse.vx, mouse.vy);
+      const idx = Math.min(numNodes - 1, Math.max(0, Math.floor((mouse.x / width) * (numNodes - 1))));
+      const currentSurfaceY = nodes[idx] ? nodes[idx].y : height * BASE_FILL_RATIO;
+      const distFromSurface = mouse.y - currentSurfaceY;
+
+      // When cursor is close to surface or moving fast over card
+      if (Math.abs(distFromSurface) < 140 || speed > 3.5) {
+        let push = mouse.vy * 0.4;
+        push += (Math.random() - 0.5) * Math.min(speed * 0.3, 5);
+        push = Math.max(-22, Math.min(22, push));
+
+        if (Math.abs(push) > 0.35) {
+          disturb(mouse.x, push, Math.min(140, 50 + speed * 2.2));
+          if (speed > 5 && Math.random() < 0.28) {
+            spawnBubble(mouse.x + (Math.random() - 0.5) * 40, Math.max(currentSurfaceY + 20, mouse.y));
+          }
+        }
+      }
+    });
+
+    card.addEventListener('pointerdown', (e) => {
+      const rect = card.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+      disturb(clickX, -24, 120);
+      for (let i = 0; i < 7; i++) {
+        spawnBubble(
+          clickX + (Math.random() - 0.5) * 70,
+          Math.min(height - 15, clickY + Math.random() * 50)
+        );
+      }
+    });
+
+    card.addEventListener('pointerleave', () => {
+      mouse.isInside = false;
+      mouse.vx = 0;
+      mouse.vy = 0;
+    });
+
+    // Real device tilt sensor (gyroscope / accelerometer)
+    window.addEventListener('deviceorientation', (e) => {
+      if (e.gamma !== null && e.gamma !== undefined) {
+        sensorAvailable = true;
+        const clampedGamma = Math.max(-40, Math.min(40, e.gamma));
+        targetTilt = (clampedGamma * Math.PI / 180) * 0.45;
+      }
+    }, { passive: true });
+
+    let animationFrameId = null;
+    let isRunning = false;
+    let time = 0;
+
+    function updatePhysics() {
+      time++;
+      const baseFill = height * BASE_FILL_RATIO;
+
+      // Guessing / Desktop tilt physics when hardware sensor not present
+      if (!sensorAvailable) {
+        if (mouse.isInside) {
+          const lateralInertia = -mouse.vx * 0.003;
+          const posTilt = ((mouse.x - width / 2) / (width / 2)) * 0.045;
+          targetTilt = Math.max(-0.25, Math.min(0.25, lateralInertia + posTilt));
+        } else {
+          targetTilt = 0;
+        }
+      }
+
+      // Slosh angle spring-damper dynamics (simulates real container inertia)
+      sloshVel += (targetTilt - sloshAngle) * TILT_SPRING - sloshVel * TILT_DAMP;
+      sloshAngle += sloshVel;
+
+      // Update node springs
+      for (let i = 0; i < numNodes; i++) {
+        const dx = nodes[i].x - width / 2;
+        const tiltOffset = dx * Math.sin(sloshAngle);
+        // Ambient natural multi-frequency undulation
+        const ambient = Math.sin(time * 0.02 + nodes[i].x * 0.007) * 3.2
+                      + Math.cos(time * 0.035 + nodes[i].x * 0.018) * 1.6;
+
+        nodes[i].targetY = baseFill + tiltOffset + ambient;
+
+        const dy = nodes[i].targetY - nodes[i].y;
+        nodes[i].vel += dy * TENSION - nodes[i].vel * DAMPING;
+        nodes[i].y += nodes[i].vel;
+      }
+
+      // Multi-pass neighbor wave propagation
+      for (let p = 0; p < SPREAD_PASSES; p++) {
+        for (let i = 0; i < numNodes; i++) {
+          if (i > 0) {
+            leftDeltas[i] = SPREAD * (nodes[i].y - nodes[i - 1].y);
+            nodes[i - 1].vel += leftDeltas[i];
+          }
+          if (i < numNodes - 1) {
+            rightDeltas[i] = SPREAD * (nodes[i].y - nodes[i + 1].y);
+            nodes[i + 1].vel += rightDeltas[i];
+          }
+        }
+        for (let i = 0; i < numNodes; i++) {
+          if (i > 0) nodes[i - 1].y += leftDeltas[i];
+          if (i < numNodes - 1) nodes[i + 1].y += rightDeltas[i];
+        }
+      }
+
+      // Ambient bubble generation
+      if (time % 36 === 0 && Math.random() < 0.75) {
+        spawnBubble();
+      }
+
+      // Update bubbles
+      for (let i = bubbles.length - 1; i >= 0; i--) {
+        const b = bubbles[i];
+        b.y += b.vy;
+        b.phase += b.wobbleSpeed;
+
+        const currentX = b.x + Math.sin(b.phase) * b.wobbleAmp;
+        const nodeIdx = Math.min(numNodes - 1, Math.max(0, Math.floor((currentX / width) * (numNodes - 1))));
+        const surfaceY = nodes[nodeIdx] ? nodes[nodeIdx].y : baseFill;
+
+        if (b.y <= surfaceY + 2) {
+          disturb(currentX, -1.2, 25);
+          bubbles.splice(i, 1);
+        }
+      }
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, width, height);
+      if (numNodes < 2) return;
+
+      // 1. Background liquid layer (depth & parallax)
+      ctx.beginPath();
+      const backOffset = 10;
+      ctx.moveTo(nodes[0].x, nodes[0].y + Math.sin(time * 0.03) * 6 + backOffset);
+      for (let i = 0; i < numNodes - 1; i++) {
+        const waveOffset = Math.sin(time * 0.028 + i * 0.15) * 7 + backOffset;
+        const xc = (nodes[i].x + nodes[i + 1].x) / 2;
+        const yc = (nodes[i].y + nodes[i + 1].y) / 2 + waveOffset;
+        ctx.quadraticCurveTo(nodes[i].x, nodes[i].y + waveOffset, xc, yc);
+      }
+      ctx.lineTo(nodes[numNodes - 1].x, nodes[numNodes - 1].y + backOffset);
+      ctx.lineTo(width, height);
+      ctx.lineTo(0, height);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(150, 10, 25, 0.42)';
+      ctx.fill();
+
+      // 2. Main primary red liquid volume
+      const grad = ctx.createLinearGradient(0, height * 0.35, 0, height);
+      grad.addColorStop(0, 'rgba(255, 42, 59, 0.76)');
+      grad.addColorStop(0.3, 'rgba(220, 20, 42, 0.88)');
+      grad.addColorStop(0.7, 'rgba(165, 12, 28, 0.94)');
+      grad.addColorStop(1, 'rgba(95, 4, 15, 0.98)');
+
+      ctx.beginPath();
+      ctx.moveTo(nodes[0].x, nodes[0].y);
+      for (let i = 0; i < numNodes - 1; i++) {
+        const xc = (nodes[i].x + nodes[i + 1].x) / 2;
+        const yc = (nodes[i].y + nodes[i + 1].y) / 2;
+        ctx.quadraticCurveTo(nodes[i].x, nodes[i].y, xc, yc);
+      }
+      ctx.lineTo(nodes[numNodes - 1].x, nodes[numNodes - 1].y);
+      ctx.lineTo(width, height);
+      ctx.lineTo(0, height);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // 3. Surface crest luminous highlight
+      ctx.beginPath();
+      ctx.moveTo(nodes[0].x, nodes[0].y);
+      for (let i = 0; i < numNodes - 1; i++) {
+        const xc = (nodes[i].x + nodes[i + 1].x) / 2;
+        const yc = (nodes[i].y + nodes[i + 1].y) / 2;
+        ctx.quadraticCurveTo(nodes[i].x, nodes[i].y, xc, yc);
+      }
+      ctx.lineTo(nodes[numNodes - 1].x, nodes[numNodes - 1].y);
+
+      ctx.save();
+      ctx.shadowColor = '#ff2a3b';
+      ctx.shadowBlur = 14;
+      ctx.strokeStyle = 'rgba(255, 155, 175, 0.92)';
+      ctx.lineWidth = 2.6;
+      ctx.stroke();
+      ctx.restore();
+
+      // 4. Underwater bubbles
+      for (let i = 0; i < bubbles.length; i++) {
+        const b = bubbles[i];
+        const bx = b.x + Math.sin(b.phase) * b.wobbleAmp;
+        ctx.beginPath();
+        ctx.arc(bx, b.y, b.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 190, 200, ${b.alpha * 0.7})`;
+        ctx.fill();
+        ctx.strokeStyle = `rgba(255, 60, 80, ${b.alpha * 0.9})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(bx - b.radius * 0.35, b.y - b.radius * 0.35, Math.max(0.6, b.radius * 0.28), 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${b.alpha * 0.85})`;
+        ctx.fill();
+      }
+
+      // 5. Cursor water glow / refraction
+      if (mouse.isInside && mouse.x >= 0 && mouse.x <= width && mouse.y >= 0 && mouse.y <= height) {
+        const nodeIdx = Math.min(numNodes - 1, Math.max(0, Math.floor((mouse.x / width) * (numNodes - 1))));
+        const surfaceY = nodes[nodeIdx] ? nodes[nodeIdx].y : height * BASE_FILL_RATIO;
+        if (mouse.y >= surfaceY - 50) {
+          const radial = ctx.createRadialGradient(mouse.x, mouse.y, 4, mouse.x, mouse.y, 90);
+          radial.addColorStop(0, 'rgba(255, 80, 100, 0.25)');
+          radial.addColorStop(0.6, 'rgba(255, 42, 59, 0.08)');
+          radial.addColorStop(1, 'rgba(255, 42, 59, 0)');
+          ctx.beginPath();
+          ctx.arc(mouse.x, mouse.y, 90, 0, Math.PI * 2);
+          ctx.fillStyle = radial;
+          ctx.fill();
+        }
+      }
+    }
+
+    function loop() {
+      if (!isRunning) return;
+      updatePhysics();
+      render();
+      animationFrameId = requestAnimationFrame(loop);
+    }
+
+    function start() {
+      if (isRunning) return;
+      isRunning = true;
+      animationFrameId = requestAnimationFrame(loop);
+    }
+
+    function stop() {
+      isRunning = false;
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+    }
+
+    // Performance: Only run when footer card is intersecting viewport
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          start();
+        } else {
+          stop();
+        }
+      });
+    }, { threshold: 0 });
+
+    observer.observe(card);
+
+    resize();
+    render();
+    start();
+    window.addEventListener('resize', resize);
+    window.addEventListener('orientationchange', resize);
+  }
+
+  // Initialize Footer Liquid Simulation
+  initFooterLiquid();
+
 });
