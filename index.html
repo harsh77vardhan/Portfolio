@@ -108,8 +108,55 @@
           </svg>
         </a>
       </div>
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mobile-nav-drawer">
+        <span class="hamburger-line line-1"></span>
+        <span class="hamburger-line line-2"></span>
+      </button>
     </div>
   </header>
+
+  <!-- ================= MOBILE NAV DRAWER ================= -->
+  <div class="mobile-drawer" id="mobile-nav-drawer" data-lenis-prevent aria-hidden="true">
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    <div class="drawer-content">
+      <nav class="drawer-nav-list">
+        <a href="#hero" class="drawer-nav-link active">HOME</a>
+        <a href="#about" class="drawer-nav-link">ABOUT ME</a>
+        <a href="#experience" class="drawer-nav-link">EXPERIENCE</a>
+        <a href="#works" class="drawer-nav-link">PROJECTS</a>
+        <a href="#landing-pages" class="drawer-nav-link">LANDING PAGES</a>
+        <a href="#services" class="drawer-nav-link">SERVICES</a>
+      </nav>
+      <div class="drawer-socials">
+        <a href="https://www.instagram.com/hydrogen_0__/" target="_blank" rel="noopener" aria-label="Instagram" class="drawer-social-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+        </a>
+        <a href="https://x.com/harsh_vs_0" target="_blank" rel="noopener" aria-label="Twitter / X" class="drawer-social-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/in/harsh-singh-0aba76360/" target="_blank" rel="noopener" aria-label="LinkedIn" class="drawer-social-icon">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+            <rect x="2" y="9" width="4" height="12"></rect>
+            <circle cx="4" cy="4" r="2"></circle>
+          </svg>
+        </a>
+        <a href="https://github.com/dashboard" target="_blank" rel="noopener" aria-label="GitHub" class="drawer-social-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
 
   <!-- ================= MAIN CONTAINER ================= -->
   <main id="smooth-content">
@@ -310,40 +357,37 @@
         <div class="carousel-3d-track" id="carousel-3d-track">
 
           <!-- Card 1 -->
-          <div class="carousel-card" data-index="0" data-title="seven">
+          <div class="carousel-card" data-index="0" data-title="seven" data-subtitle="Interactive 3D Showcase" data-num="01 / 05">
             <div class="card-inner">
-              <img src="images/s7.png" alt="seven" >
+              <img src="images/s7.png" alt="seven" class="card-media">
             </div>
           </div>
-          
 
           <!-- Card 2 -->
-          <div class="carousel-card" data-index="1" data-title="wiplash">
+          <div class="carousel-card" data-index="1" data-title="wiplash" data-subtitle="Dynamic Motion System" data-num="02 / 05">
             <div class="card-inner">
-              <img src="/images/w.png" alt="wiplash" >
+              <img src="images/w.png" alt="wiplash" class="card-media">
             </div>
           </div>
 
           <!-- Card 3 -->
-          <div class="carousel-card" data-index="2" data-title="scarface"
-            >
+          <div class="carousel-card" data-index="2" data-title="scarface" data-subtitle="Creative Production" data-num="03 / 05">
             <div class="card-inner">
-              <img src="/images/sf.png" alt="scarface">
+              <img src="images/sf.png" alt="scarface" class="card-media">
             </div>
           </div>
 
           <!-- Card 4 -->
-          <div class="carousel-card" data-index="3" data-title="lunchbox"
-            >
+          <div class="carousel-card" data-index="3" data-title="lunchbox" data-subtitle="Brand Identity" data-num="04 / 05">
             <div class="card-inner">
-              <img src="/images/lb.png" alt="lunchbox">
+              <img src="images/lb.png" alt="lunchbox" class="card-media">
             </div>
           </div>
 
           <!-- Card 5 -->
-          <div class="carousel-card" data-index="4" data-title="batman">
+          <div class="carousel-card" data-index="4" data-title="batman" data-subtitle="Cinematic Experience" data-num="05 / 05">
             <div class="card-inner">
-              <img src="/images/bat1.jpeg" alt="batman">
+              <img src="images/bat1.jpeg" alt="batman" class="card-media">
             </div>
           </div>
         </div>

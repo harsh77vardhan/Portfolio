@@ -11,12 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. LENIS + GSAP TICKER SYNCHRONIZATION
   // ==========================================
   gsap.registerPlugin(ScrollTrigger, Draggable);
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   const lenis = new Lenis({
     duration: 1.2,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
-    smoothTouch: false,
+    syncTouch: false,
+    touchMultiplier: 1.0,
     autoRaf: false,
   });
 
@@ -374,30 +376,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  let carouselRafId = null;
+  let isCarouselInView = false;
+
   function updateCarouselPositions() {
+    if (!isCarouselInView) {
+      carouselRafId = null;
+      return;
+    }
     // Smooth lerp
     currentAngle += (targetAngle - currentAngle) * 0.12;
     applyCarouselTransforms();
-    requestAnimationFrame(updateCarouselPositions);
+    carouselRafId = requestAnimationFrame(updateCarouselPositions);
   }
 
-  // Pointer drag controls for carousel
+  // Pointer drag controls for carousel with touch-scroll safety
   if (carouselStage) {
+    let startY = 0;
+    let isHorizontalGesture = false;
+    let hasCaptured = false;
+
     carouselStage.addEventListener('pointerdown', (e) => {
       isDraggingCarousel = true;
       startX = e.clientX;
+      startY = e.clientY;
       prevAngle = targetAngle;
-      carouselStage.setPointerCapture(e.pointerId);
+      isHorizontalGesture = false;
+      hasCaptured = false;
+      if (e.pointerType !== 'touch') {
+        hasCaptured = true;
+        try { carouselStage.setPointerCapture(e.pointerId); } catch (_) {}
+      }
     });
 
     carouselStage.addEventListener('pointermove', (e) => {
       if (!isDraggingCarousel) return;
       const dx = e.clientX - startX;
-      targetAngle = prevAngle + dx * 0.22;
+      const dy = e.clientY - startY;
+
+      // On touch, detect gesture intention
+      if (e.pointerType === 'touch' && !hasCaptured) {
+        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+          if (Math.abs(dx) > Math.abs(dy)) {
+            isHorizontalGesture = true;
+            hasCaptured = true;
+            try { carouselStage.setPointerCapture(e.pointerId); } catch (_) {}
+          } else {
+            // Predominantly vertical swipe: release so browser scrolls page naturally!
+            isDraggingCarousel = false;
+            return;
+          }
+        }
+      }
+
+      if (e.pointerType !== 'touch' || isHorizontalGesture) {
+        targetAngle = prevAngle + dx * 0.22;
+      }
     });
 
-    const stopDrag = () => {
+    const stopDrag = (e) => {
       isDraggingCarousel = false;
+      isHorizontalGesture = false;
+      if (hasCaptured && e && e.pointerId) {
+        try { carouselStage.releasePointerCapture(e.pointerId); } catch (_) {}
+      }
+      hasCaptured = false;
     };
 
     carouselStage.addEventListener('pointerup', stopDrag);
@@ -423,8 +466,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    // Pause rAF when carousel section is offscreen to preserve mobile battery & GPU
+    const landingSec = document.getElementById('landing-pages');
+    if (landingSec) {
+      const carouselObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          isCarouselInView = entry.isIntersecting;
+          if (isCarouselInView && !carouselRafId) {
+            carouselRafId = requestAnimationFrame(updateCarouselPositions);
+          }
+        });
+      }, { threshold: 0.05 });
+      carouselObserver.observe(landingSec);
+    }
+
     applyCarouselTransforms();
-    updateCarouselPositions();
+    isCarouselInView = true;
+    carouselRafId = requestAnimationFrame(updateCarouselPositions);
 
     // Ensure carousel looping videos play reliably
     document.querySelectorAll('.carousel-card video').forEach((vid) => {
@@ -528,23 +586,40 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Touch/drag on drum cylinder
+    // Touch/drag on drum cylinder with touch-scroll safety
     const drumViewport = document.getElementById('drum-viewport');
     let isDraggingDrum = false;
     let drumStartY = 0;
+    let drumStartX = 0;
     let drumStartAngle = 0;
+    let hasCapturedDrum = false;
 
     if (drumViewport) {
       drumViewport.addEventListener('pointerdown', (e) => {
         isDraggingDrum = true;
         drumStartY = e.clientY;
+        drumStartX = e.clientX;
         drumStartAngle = currentDrumAngleX;
-        drumViewport.setPointerCapture(e.pointerId);
+        hasCapturedDrum = false;
+        if (e.pointerType !== 'touch') {
+          hasCapturedDrum = true;
+          try { drumViewport.setPointerCapture(e.pointerId); } catch (_) {}
+        }
       });
 
       drumViewport.addEventListener('pointermove', (e) => {
         if (!isDraggingDrum) return;
         const dy = e.clientY - drumStartY;
+
+        // On touch, allow native vertical scroll unless deliberate drag
+        if (e.pointerType === 'touch' && !hasCapturedDrum) {
+          if (Math.abs(dy) > 10) {
+            // Let the page scroll naturally
+            isDraggingDrum = false;
+            return;
+          }
+        }
+
         currentDrumAngleX = drumStartAngle + dy * 0.45;
         drumCylinder.style.transform = `rotateX(${currentDrumAngleX}deg)`;
 
@@ -558,8 +633,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      const endDrumDrag = () => {
+      const endDrumDrag = (e) => {
         isDraggingDrum = false;
+        if (hasCapturedDrum && e && e.pointerId) {
+          try { drumViewport.releasePointerCapture(e.pointerId); } catch (_) {}
+        }
+        hasCapturedDrum = false;
       };
       drumViewport.addEventListener('pointerup', endDrumDrag);
       drumViewport.addEventListener('pointercancel', endDrumDrag);
@@ -606,6 +685,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Recalculate dynamic scrollHeight for active accordion items on window resize/orientationchange
+  window.addEventListener('resize', () => {
+    accordionItems.forEach((item) => {
+      if (item.classList.contains('active')) {
+        const body = item.querySelector('.accordion-body');
+        if (body) body.style.height = body.scrollHeight + 'px';
+      }
+    });
+  });
+
   // ==========================================
   // 10. FOOTER ANIMATION
   // ==========================================
@@ -627,10 +716,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // 11. NAVBAR INTERACTIVITY & SYNCHRONIZED SCROLL
   // ==========================================
   const navLinks = document.querySelectorAll('.nav-link');
+  const drawerNavLinks = document.querySelectorAll('.drawer-nav-link');
 
   function setActiveNav(id) {
     if (!id) return;
     navLinks.forEach((link) => {
+      const href = link.getAttribute('href');
+      if (href === `#${id}`) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+    drawerNavLinks.forEach((link) => {
       const href = link.getAttribute('href');
       if (href === `#${id}`) {
         link.classList.add('active');
@@ -721,6 +819,72 @@ document.addEventListener('DOMContentLoaded', () => {
       setActiveNav(idClean);
     });
   });
+
+  // ==========================================
+  // MOBILE NAVIGATION DRAWER CONTROLLER
+  // ==========================================
+  function initMobileDrawer() {
+    const navToggle = document.getElementById('nav-toggle');
+    const drawer = document.getElementById('mobile-nav-drawer');
+    const backdrop = document.getElementById('drawer-backdrop');
+    if (!navToggle || !drawer) return;
+
+    let isOpen = false;
+
+    function openDrawer() {
+      isOpen = true;
+      navToggle.classList.add('is-active');
+      navToggle.setAttribute('aria-expanded', 'true');
+      drawer.classList.add('is-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      lenis.stop();
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      if (!isOpen) return;
+      isOpen = false;
+      navToggle.classList.remove('is-active');
+      navToggle.setAttribute('aria-expanded', 'false');
+      drawer.classList.remove('is-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      lenis.start();
+      document.body.style.overflow = '';
+    }
+
+    navToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (isOpen) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    });
+
+    if (backdrop) {
+      backdrop.addEventListener('click', closeDrawer);
+    }
+
+    drawer.querySelectorAll('.drawer-nav-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        closeDrawer();
+      });
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 1024 && isOpen) {
+        closeDrawer();
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        closeDrawer();
+      }
+    });
+  }
+
+  initMobileDrawer();
 
   // Refresh ScrollTrigger after assets settle
   window.addEventListener('load', () => {
@@ -880,7 +1044,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (Math.abs(distFromSurface) < 140 || speed > 3.5) {
         let push = mouse.vy * 0.4;
         push += (Math.random() - 0.5) * Math.min(speed * 0.3, 5);
-        push = Math.max(-22, Math.min(22, push));
+        if (e.pointerType === 'touch') {
+          // Dampen push on touch to prevent normal scroll-swipes from thrashing fluid
+          push *= 0.35;
+        }
+        push = Math.max(-20, Math.min(20, push));
 
         if (Math.abs(push) > 0.35) {
           disturb(mouse.x, push, Math.min(140, 50 + speed * 2.2));
@@ -901,6 +1069,15 @@ document.addEventListener('DOMContentLoaded', () => {
           clickX + (Math.random() - 0.5) * 70,
           Math.min(height - 15, clickY + Math.random() * 50)
         );
+      }
+
+      // iOS Safari 13+ Gyroscope permission request on first user touch
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission().then((res) => {
+          if (res === 'granted') {
+            sensorAvailable = true;
+          }
+        }).catch(() => {});
       }
     });
 
