@@ -295,32 +295,261 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Role Tab Switching
-  const tabBtns = document.querySelectorAll('.exp-tab-btn');
-  const expCards = {
-    learning: document.getElementById('card-learning'),
-    freelance: document.getElementById('card-freelance')
-  };
+  // ==========================================
+  // PREMIUM 3D CARD SWITCHER & DEPTH CHOREOGRAPHY
+  // ==========================================
+  function initExperienceCardSwitcher() {
+    const tabBtns = Array.from(document.querySelectorAll('.exp-tab-btn'));
+    const cardsContainer = document.querySelector('.exp-cards-col');
+    const expCards = {
+      learning: document.getElementById('card-learning'),
+      freelance: document.getElementById('card-freelance')
+    };
 
-  tabBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      tabBtns.forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
+    if (!tabBtns.length || !expCards.learning || !expCards.freelance) return;
 
-      const role = btn.dataset.role;
-      Object.entries(expCards).forEach(([key, card]) => {
-        if (key === role) {
-          card.classList.add('active');
-          gsap.fromTo(card,
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }
+    const roleOrder = tabBtns.map((b) => b.dataset.role);
+    let currentRole = 'learning';
+    let idleFloatTween = null;
+
+    // Initialize initial card states
+    Object.entries(expCards).forEach(([role, card]) => {
+      if (!card) return;
+      if (role === currentRole) {
+        card.classList.add('active');
+        card.style.visibility = 'visible';
+        card.style.opacity = '1';
+        card.style.pointerEvents = 'auto';
+        card.style.zIndex = '2';
+        card.setAttribute('aria-hidden', 'false');
+        gsap.set(card, { x: 0, y: 0, scale: 1, rotateX: 0, rotateY: 0 });
+      } else {
+        card.classList.remove('active');
+        card.style.visibility = 'hidden';
+        card.style.opacity = '0';
+        card.style.pointerEvents = 'none';
+        card.style.zIndex = '1';
+        card.setAttribute('aria-hidden', 'true');
+        gsap.set(card, { x: 0, y: 30, scale: 0.94, rotateX: 0, rotateY: 0 });
+      }
+    });
+
+    // Subtle ambient idle float on the active card
+    function startIdleFloat() {
+      if (idleFloatTween) idleFloatTween.kill();
+      const activeCard = expCards[currentRole];
+      if (!activeCard) return;
+
+      idleFloatTween = gsap.to(activeCard, {
+        y: '-=6',
+        duration: 3.2,
+        yoyo: true,
+        repeat: -1,
+        ease: 'sine.inOut',
+        overwrite: 'auto'
+      });
+    }
+
+    function stopIdleFloat() {
+      if (idleFloatTween) {
+        idleFloatTween.kill();
+        idleFloatTween = null;
+      }
+      const activeCard = expCards[currentRole];
+      if (activeCard) {
+        gsap.to(activeCard, { y: 0, duration: 0.35, ease: 'power2.out' });
+      }
+    }
+
+    startIdleFloat();
+
+    // Central Card Switch Dispatcher
+    function switchRole(targetRole) {
+      if (targetRole === currentRole || !expCards[targetRole]) return;
+
+      const outgoingCard = expCards[currentRole];
+      const incomingCard = expCards[targetRole];
+
+      const oldIndex = roleOrder.indexOf(currentRole);
+      const newIndex = roleOrder.indexOf(targetRole);
+      const direction = newIndex >= oldIndex ? 1 : -1;
+
+      // Update state tracking and buttons immediately
+      currentRole = targetRole;
+
+      tabBtns.forEach((btn) => {
+        const isActive = btn.dataset.role === targetRole;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-selected', String(isActive));
+        if (isActive && urlParams.get('noanim') !== '1') {
+          gsap.fromTo(btn,
+            { scale: 0.93 },
+            { scale: 1, duration: 0.35, ease: 'back.out(2)' }
           );
-        } else {
-          card.classList.remove('active');
         }
       });
+
+      // If noanim mode is requested (e.g. headless tests) resolve instantly
+      if (urlParams.get('noanim') === '1') {
+        outgoingCard.classList.remove('active');
+        outgoingCard.style.visibility = 'hidden';
+        outgoingCard.style.opacity = '0';
+        outgoingCard.style.pointerEvents = 'none';
+        outgoingCard.style.zIndex = '1';
+        outgoingCard.setAttribute('aria-hidden', 'true');
+
+        incomingCard.classList.add('active');
+        incomingCard.style.visibility = 'visible';
+        incomingCard.style.opacity = '1';
+        incomingCard.style.pointerEvents = 'auto';
+        incomingCard.style.zIndex = '2';
+        incomingCard.setAttribute('aria-hidden', 'false');
+        gsap.set(incomingCard, { x: 0, y: 0, scale: 1, rotateX: 0, rotateY: 0, opacity: 1 });
+        return;
+      }
+
+      // Stop ambient float during transition
+      if (idleFloatTween) {
+        idleFloatTween.kill();
+        idleFloatTween = null;
+      }
+
+      // Kill any active tweens on cards for bulletproof rapid-click handling
+      gsap.killTweensOf([outgoingCard, incomingCard]);
+
+      // 1. Outgoing Card Animation: Subtly recedes into depth, slides away, and dissolves
+      outgoingCard.style.zIndex = '1';
+      outgoingCard.style.pointerEvents = 'none';
+
+      gsap.to(outgoingCard, {
+        y: direction * -34,
+        scale: 0.93,
+        opacity: 0,
+        rotateX: direction * 4.5,
+        duration: 0.52,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          outgoingCard.classList.remove('active');
+          outgoingCard.style.visibility = 'hidden';
+          outgoingCard.setAttribute('aria-hidden', 'true');
+          gsap.set(outgoingCard, { clearProps: 'transform,rotateX,rotateY' });
+        }
+      });
+
+      // 2. Incoming Card Animation: Slides into place with scale-up and shadow expansion
+      incomingCard.classList.add('active');
+      incomingCard.style.visibility = 'visible';
+      incomingCard.style.zIndex = '2';
+      incomingCard.setAttribute('aria-hidden', 'false');
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          incomingCard.style.pointerEvents = 'auto';
+          startIdleFloat();
+          if (typeof ScrollTrigger !== 'undefined') {
+            ScrollTrigger.refresh();
+          }
+        }
+      });
+
+      tl.fromTo(incomingCard,
+        {
+          y: direction * 42,
+          scale: 0.92,
+          opacity: 0,
+          rotateX: direction * -4.5,
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 42, 59, 0)'
+        },
+        {
+          y: 0,
+          scale: 1,
+          opacity: 1,
+          rotateX: 0,
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 42, 59, 0.14)',
+          duration: 0.65,
+          ease: 'power3.out'
+        }
+      );
+
+      // 3. Interior micro-stagger for Apple/Linear quality polish
+      const interiorElements = [
+        incomingCard.querySelector('.exp-card-header'),
+        incomingCard.querySelector('.exp-role-title'),
+        incomingCard.querySelector('.exp-role-summary'),
+        incomingCard.querySelector('.exp-milestones')
+      ].filter(Boolean);
+
+      if (interiorElements.length) {
+        gsap.killTweensOf(interiorElements);
+        tl.fromTo(interiorElements,
+          { y: direction * 14, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.05, duration: 0.52, ease: 'power2.out' },
+          0.1
+        );
+      }
+    }
+
+    // Tab button click listeners
+    tabBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetRole = btn.dataset.role;
+        switchRole(targetRole);
+      });
     });
-  });
+
+    // Optional Interactive 3D Perspective Tilt on Mousemove for Desktop
+    if (cardsContainer && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      let isHovered = false;
+
+      cardsContainer.addEventListener('mouseenter', () => {
+        isHovered = true;
+        stopIdleFloat();
+      });
+
+      cardsContainer.addEventListener('mousemove', (e) => {
+        const activeCard = expCards[currentRole];
+        if (!activeCard) return;
+
+        const rect = cardsContainer.getBoundingClientRect();
+        const xPercent = (e.clientX - rect.left) / rect.width - 0.5;
+        const yPercent = (e.clientY - rect.top) / rect.height - 0.5;
+
+        gsap.to(activeCard, {
+          rotateY: xPercent * 6,
+          rotateX: -yPercent * 6,
+          duration: 0.35,
+          ease: 'power1.out',
+          overwrite: 'auto'
+        });
+      });
+
+      cardsContainer.addEventListener('mouseleave', () => {
+        isHovered = false;
+        const activeCard = expCards[currentRole];
+        if (activeCard) {
+          gsap.to(activeCard, {
+            rotateX: 0,
+            rotateY: 0,
+            y: 0,
+            duration: 0.6,
+            ease: 'power2.out',
+            onComplete: () => {
+              if (!isHovered) startIdleFloat();
+            }
+          });
+        }
+      });
+    }
+
+    // Optional deep-link or initial parameter (e.g. ?exprole=freelance)
+    const expRoleParam = urlParams.get('exprole');
+    if (expRoleParam && expCards[expRoleParam] && expRoleParam !== currentRole) {
+      switchRole(expRoleParam);
+    }
+  }
+
+  initExperienceCardSwitcher();
 
   // ==========================================
   // 7. FEATURED PROJECT 3D CURVED CAROUSEL
@@ -659,9 +888,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (item.classList.contains('active')) {
       body.style.height = body.scrollHeight + 'px';
       arrow.textContent = '∧';
+      header.setAttribute('aria-expanded', 'true');
     } else {
       body.style.height = '0px';
       arrow.textContent = '∨';
+      header.setAttribute('aria-expanded', 'false');
     }
 
     header.addEventListener('click', () => {
@@ -670,18 +901,30 @@ document.addEventListener('DOMContentLoaded', () => {
       // Close all items
       accordionItems.forEach((other) => {
         other.classList.remove('active');
+        const otherHeader = other.querySelector('.accordion-header');
         const otherBody = other.querySelector('.accordion-body');
         const otherArrow = other.querySelector('.accordion-arrow');
-        otherBody.style.height = '0px';
-        otherArrow.textContent = '∨';
+        if (otherHeader) otherHeader.setAttribute('aria-expanded', 'false');
+        if (otherBody) otherBody.style.height = '0px';
+        if (otherArrow) otherArrow.textContent = '∨';
       });
 
       // Toggle clicked item
       if (!isActive) {
         item.classList.add('active');
+        header.setAttribute('aria-expanded', 'true');
         body.style.height = body.scrollHeight + 'px';
         arrow.textContent = '∧';
+      } else {
+        header.setAttribute('aria-expanded', 'false');
       }
+
+      // Refresh ScrollTrigger calculations after accordion animation
+      setTimeout(() => {
+        if (typeof ScrollTrigger !== 'undefined') {
+          ScrollTrigger.refresh();
+        }
+      }, 350);
     });
   });
 
@@ -1312,5 +1555,165 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize Footer Liquid Simulation
   initFooterLiquid();
+
+  // ==========================================================================
+  // 12. BULLETPROOF EMAIL DISPATCHER, MAGNETIC PHYSICS & HUD TOAST
+  // ==========================================================================
+  const RECIPIENT_EMAIL = 'harshvsvardhan22@gmail.com';
+  const toastEl = document.getElementById('email-toast');
+  const toastGmailLink = document.getElementById('toast-gmail-link');
+  const toastCloseBtn = document.getElementById('toast-close-btn');
+  let toastTimeout = null;
+
+  // Cross-browser clipboard copy with fallback
+  function copyEmailToClipboard(email) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(email).catch(() => {
+        fallbackCopyText(email);
+      });
+    } else {
+      fallbackCopyText(email);
+      return Promise.resolve();
+    }
+  }
+
+  function fallbackCopyText(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+    } catch (err) {
+      console.warn('Fallback copy failed', err);
+    }
+    document.body.removeChild(textarea);
+  }
+
+  // Display Toast Notification via GSAP
+  function showEmailToast(gmailUrl) {
+    if (!toastEl) return;
+
+    if (toastGmailLink && gmailUrl) {
+      toastGmailLink.href = gmailUrl;
+    }
+
+    if (toastTimeout) {
+      clearTimeout(toastTimeout);
+    }
+
+    toastEl.classList.add('active');
+    gsap.killTweensOf(toastEl);
+    gsap.fromTo(toastEl,
+      { y: 60, opacity: 0, scale: 0.95 },
+      { y: 0, opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.4)' }
+    );
+
+    toastTimeout = setTimeout(() => {
+      dismissEmailToast();
+    }, 5500);
+  }
+
+  function dismissEmailToast() {
+    if (!toastEl) return;
+    gsap.to(toastEl, {
+      y: 40,
+      opacity: 0,
+      scale: 0.96,
+      duration: 0.35,
+      ease: 'power2.in',
+      onComplete: () => {
+        toastEl.classList.remove('active');
+      }
+    });
+  }
+
+  if (toastCloseBtn) {
+    toastCloseBtn.addEventListener('click', dismissEmailToast);
+  }
+
+  // Central Email Dispatcher
+  function dispatchEmailInquiry(serviceName) {
+    const service = serviceName || 'General Inquiry';
+    const subject = `Project Inquiry: ${service} — Harsh Vardhan Singh`;
+    const body = `Hi Harsh,\n\nI came across your portfolio and would like to discuss a ${service} project.\n\nProject Overview:\nTimeline:\nBudget Range:\n\nLooking forward to your reply!`;
+
+    const encodedSubject = encodeURIComponent(subject);
+    const encodedBody = encodeURIComponent(body);
+
+    const mailtoUrl = `mailto:${RECIPIENT_EMAIL}?subject=${encodedSubject}&body=${encodedBody}`;
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${RECIPIENT_EMAIL}&su=${encodedSubject}&body=${encodedBody}`;
+
+    // 1. Copy to clipboard immediately
+    copyEmailToClipboard(RECIPIENT_EMAIL);
+
+    // 2. Device-aware dispatch
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      // Mobile browsers handle mailto: natively into Mail/Gmail apps
+      window.location.href = mailtoUrl;
+    } else {
+      // Desktop: Open Gmail compose directly in a new tab + show floating Toast HUD with fallback
+      window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+      showEmailToast(gmailUrl);
+    }
+  }
+
+  // Bind to all contact/inquiry buttons
+  document.querySelectorAll('[data-email-cta]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const serviceName = btn.getAttribute('data-service') || 'General Inquiry';
+      dispatchEmailInquiry(serviceName);
+    });
+  });
+
+  // Bind quick copy buttons
+  document.querySelectorAll('[data-copy-email]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      copyEmailToClipboard(RECIPIENT_EMAIL);
+      showEmailToast(`https://mail.google.com/mail/?view=cm&fs=1&to=${RECIPIENT_EMAIL}`);
+      const label = btn.querySelector('.copy-label');
+      if (label) {
+        const orig = label.textContent;
+        label.textContent = 'COPIED!';
+        setTimeout(() => { label.textContent = orig; }, 2000);
+      }
+    });
+  });
+
+  // ==========================================================================
+  // GSAP MAGNETIC PHYSICS FOR CTA BUTTONS
+  // ==========================================================================
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.querySelectorAll('.magnetic-btn').forEach((btn) => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const relX = e.clientX - rect.left - rect.width / 2;
+        const relY = e.clientY - rect.top - rect.height / 2;
+
+        gsap.to(btn, {
+          x: relX * 0.3,
+          y: relY * 0.3,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+      });
+
+      btn.addEventListener('mouseleave', () => {
+        gsap.to(btn, {
+          x: 0,
+          y: 0,
+          duration: 0.6,
+          ease: 'elastic.out(1.1, 0.4)'
+        });
+      });
+    });
+  }
 
 });

@@ -51,10 +51,24 @@ body {
   color: #ffffff;
 }
 
+
 main#smooth-content {
   overflow-x: clip;
   width: 100%;
   max-width: 100%;
+}
+
+/* Accessibility & Semantic SEO Utility */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 /* Lenis Recommended Root Attributes */
@@ -904,68 +918,114 @@ body.nav-dark-theme .social-icon {
   margin-bottom: 3rem;
 }
 
-/* Switcher Buttons */
+/* Switcher Segmented Control */
 .exp-tabs {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
+  background: rgba(14, 6, 8, 0.65);
+  padding: 0.35rem 0.4rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 42, 59, 0.2);
+  width: fit-content;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .exp-tab-btn {
-  padding: 0.5rem 1.3rem;
+  padding: 0.5rem 1.35rem;
   border-radius: 9999px;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(255, 42, 59, 0.25);
-  transition: all 0.3s var(--ease-out);
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+  user-select: none;
 }
 
 .exp-tab-btn:hover {
   color: #ffffff;
-  border-color: #ff2a3b;
+  background: rgba(255, 42, 59, 0.12);
+  border-color: rgba(255, 42, 59, 0.3);
 }
 
 .exp-tab-btn.active {
   color: #ffffff;
-  background-color: #ff2a3b;
-  border-color: #ff2a3b;
-  box-shadow: 0 0 20px rgba(255, 42, 59, 0.5);
+  background: linear-gradient(135deg, #ff2a3b 0%, #d81626 100%);
+  border-color: #ff4554;
+  box-shadow: 0 0 24px rgba(255, 42, 59, 0.55), 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
-/* Right Cards Column */
+/* Right Cards Column — Premium 3D Stack Stage */
 .exp-cards-col {
   position: relative;
-  min-height: 480px;
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-areas: "card";
+  align-items: start;
   width: 100%;
+  min-height: 480px;
+  perspective: 1400px;
+  perspective-origin: center center;
+  transform-style: preserve-3d;
 }
 
 .exp-card {
+  grid-area: card;
+  width: 100%;
+  padding: 2.5rem;
+  background: radial-gradient(120% 120% at 85% 15%, rgba(35, 14, 18, 0.85) 0%, rgba(14, 6, 8, 0.94) 60%, rgba(8, 4, 6, 0.98) 100%);
+  border: 1px solid rgba(255, 42, 59, 0.24);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 42, 59, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  will-change: transform, opacity;
+  transform-origin: center center;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  /* CSS transitions removed to ensure 100% silky GSAP transform control without fighting tweens */
+}
+
+/* Glass specular border glint */
+.exp-card::before {
+  content: '';
   position: absolute;
   top: 0;
-  left: 0;
-  width: 100%;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 0.5s var(--ease-out), visibility 0.5s;
-  padding: 2.5rem;
-  background: rgba(18, 9, 11, 0.7);
-  border: 1px solid rgba(255, 42, 59, 0.22);
-  border-radius: 20px;
-  backdrop-filter: blur(14px);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 42, 59, 0.1);
-  box-sizing: border-box;
+  left: 6%;
+  right: 6%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), rgba(255, 42, 59, 0.75), rgba(255, 255, 255, 0.28), transparent);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Subtle corner ambient light */
+.exp-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle at top right, rgba(255, 42, 59, 0.14) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: inherit;
 }
 
 .exp-card.active {
-  opacity: 1;
+  pointer-events: auto;
   visibility: visible;
-  transform: translateY(0);
-  position: relative;
+  opacity: 1;
+  z-index: 2;
 }
 
 .exp-card-header {
@@ -1830,6 +1890,302 @@ body.nav-dark-theme .social-icon {
   background-color: #ff2a3b;
   color: #ffffff;
   box-shadow: 0 0 20px rgba(255, 42, 59, 0.6);
+}
+
+/* ==========================================================================
+   SERVICES CONTACT BUTTONS & LUXURY CTA BANNER
+   ========================================================================== */
+
+/* Enhanced Accordion Action Button */
+.service-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  background: linear-gradient(135deg, rgba(255, 42, 59, 0.18) 0%, rgba(18, 5, 8, 0.8) 100%);
+  border: 1px solid rgba(255, 42, 59, 0.45);
+  border-radius: 9999px;
+  color: #ffffff;
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.service-contact-btn::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, rgba(255, 42, 59, 0.5), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.service-contact-btn:hover {
+  background: linear-gradient(135deg, #ff2a3b 0%, #d81626 100%);
+  border-color: #ff4554;
+  color: #ffffff;
+  box-shadow: 0 0 25px rgba(255, 42, 59, 0.65), 0 4px 20px rgba(0, 0, 0, 0.6);
+  transform: translateY(-2px);
+}
+
+.service-contact-btn:hover::before {
+  opacity: 1;
+}
+
+.service-contact-btn:active {
+  transform: scale(0.96);
+}
+
+.service-contact-btn .btn-arrow {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+.service-contact-btn:hover .btn-arrow {
+  transform: translate(2px, -2px);
+}
+
+/* Dedicated Services Bottom CTA Banner */
+.services-cta-banner {
+  margin-top: 3.5rem;
+  position: relative;
+  border-radius: 24px;
+  padding: 3rem 3.5rem;
+  background: radial-gradient(100% 180% at 50% 0%, rgba(255, 42, 59, 0.12) 0%, rgba(12, 4, 6, 0.85) 60%, rgba(8, 8, 8, 0.95) 100%);
+  border: 1px solid rgba(255, 42, 59, 0.28);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 42, 59, 0.1);
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.services-cta-glow {
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 120px;
+  background: radial-gradient(ellipse at center, rgba(255, 42, 59, 0.3) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(30px);
+}
+
+.services-cta-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+}
+
+.services-cta-text {
+  max-width: 650px;
+}
+
+.services-cta-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: #ff4554;
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+}
+
+.services-cta-heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.9rem;
+}
+
+.services-cta-desc {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.services-cta-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-shrink: 0;
+}
+
+/* Glowing Primary Pill Button */
+.pill-btn-glow {
+  background: linear-gradient(135deg, #ff2a3b 0%, #b80f1e 100%) !important;
+  color: #ffffff !important;
+  border-color: #ff4554 !important;
+  box-shadow: 0 0 25px rgba(255, 42, 59, 0.55), 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+.pill-btn-glow:hover {
+  background: linear-gradient(135deg, #ff4554 0%, #e01b2c 100%) !important;
+  box-shadow: 0 0 35px rgba(255, 42, 59, 0.8), 0 6px 20px rgba(0, 0, 0, 0.6) !important;
+  transform: translateY(-2px);
+}
+
+.pill-btn-glass {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.pill-btn-glass:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 42, 59, 0.5);
+  color: #ff4554;
+  transform: translateY(-2px);
+}
+
+/* Floating Dark-Glass Email HUD Toast */
+.email-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1rem 1.4rem;
+  background: rgba(14, 5, 8, 0.92);
+  border: 1px solid rgba(255, 42, 59, 0.45);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 42, 59, 0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transform: translateY(120px);
+  opacity: 0;
+  pointer-events: none;
+  transition: none; /* Managed by GSAP */
+  max-width: 90vw;
+}
+
+.email-toast.active {
+  pointer-events: auto;
+}
+
+.toast-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 42, 59, 0.8), transparent);
+}
+
+.toast-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 42, 59, 0.12);
+  border: 1px solid rgba(255, 42, 59, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toast-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.toast-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+}
+
+.toast-subtitle {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: var(--font-mono);
+}
+
+.toast-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toast-btn-primary {
+  padding: 0.45rem 0.9rem;
+  border-radius: 9999px;
+  background: #ff2a3b;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.toast-btn-primary:hover {
+  background: #ff4554;
+  box-shadow: 0 0 16px rgba(255, 42, 59, 0.6);
+  transform: translateY(-1px);
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  transition: color 0.2s ease;
+}
+
+.toast-close:hover {
+  color: #ffffff;
+}
+
+/* Responsive adjustments for Services CTA & Toast */
+@media (max-width: 900px) {
+  .services-cta-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.8rem;
+  }
+  .services-cta-banner {
+    padding: 2.2rem 1.8rem;
+  }
+  .services-cta-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .email-toast {
+    bottom: 1.2rem;
+    right: 1.2rem;
+    left: 1.2rem;
+    max-width: none;
+    flex-wrap: wrap;
+    padding: 0.9rem 1.2rem;
+  }
 }
 
 /* ==========================================================================

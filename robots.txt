@@ -1,0 +1,14 @@
+# Robots.txt for Harsh Singh Portfolio
+# https://harsh-portfolio.vercel.app/
+
+User-agent: *
+Allow: /
+
+# Disallow access to private scratch/logs if any exist in root
+Disallow: /tmp/
+Disallow: /*?isolate=*
+Disallow: /*?nopreloader=*
+
+# Host & Sitemap specification
+Host: https://harsh-portfolio.vercel.app
+Sitemap: https://harsh-portfolio.vercel.app/sitemap.xml

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://harsh-portfolio.vercel.app/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://harsh-portfolio.vercel.app/images/hero-profile.png</image:loc>
+      <image:title>Harsh Singh — AI Engineer and Full Stack Developer Silhouette Portrait</image:title>
+      <image:caption>Harsh Singh Portfolio Portrait — AI Engineer &amp; AIML Student at VIT Bhopal University</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://harsh-portfolio.vercel.app/images/landing-shot-1.png</image:loc>
+      <image:title>Technea — AI-Powered Learning Platform Hero</image:title>
+      <image:caption>Technea AI learning platform user interface and interactive curriculum preview</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://harsh-portfolio.vercel.app/images/landing-shot-2.png</image:loc>
+      <image:title>Technea Architecture and Systems</image:title>
+      <image:caption>Technea AI platform architecture and technical design showcase</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://harsh-portfolio.vercel.app/images/landing-shot-3.png</image:loc>
+      <image:title>Technea Curriculum Module</image:title>
+      <image:caption>Technea AI curriculum module and learning pathways</image:caption>
+    </image:image>
+  </url>
+</urlset>
