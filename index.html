@@ -223,6 +223,9 @@
     </div>
   </div>
 
+  <!-- ================= EMBER STIPPLE GENERATIVE BACKGROUND ================= -->
+  <canvas id="ember-stipple-canvas" class="ember-stipple-canvas" aria-hidden="true"></canvas>
+
   <!-- ================= NAVBAR ================= -->
   <header class="navbar" id="navbar" role="banner">
     <div class="nav-container">
@@ -352,7 +355,6 @@
         <!-- Cutout Crown Profile Silhouette -->
         <div class="hero-portrait-wrapper" id="hero-portrait">
           <div class="hero-portrait-inner" id="hero-portrait-inner">
-            <div class="hero-portrait-glow"></div>
             <img src="images/hero-profile.png" alt="Harsh Singh — AI Engineer and Full Stack Developer Silhouette Portrait" title="Harsh Singh Portfolio" class="hero-portrait-img" fetchpriority="high" width="2350" height="1824">
           </div>
         </div>
@@ -381,12 +383,6 @@
 
     <!-- SECTION 2: ABOUT ME / SPOTLIGHT PORTAL -->
     <section class="section section-about" id="about" aria-label="About Harsh Singh">
-      <!-- Dark Matrix Backdrop -->
-      <div class="about-backdrop">
-        <img src="images/bg133.jpg" alt="Dark cybernetic matrix art representing AI engineering" title="Cybernetic Grid Matrix" class="about-backdrop-img" loading="lazy" decoding="async" width="736" height="736">
-        <div class="about-backdrop-overlay"></div>
-      </div>
-
       <div class="about-content-wrapper">
         <h2 class="sr-only">About Harsh Singh — AI Engineer &amp; Full Stack Developer</h2>
 
@@ -798,7 +794,6 @@
 
         <!-- High-Impact Custom Project CTA Banner -->
         <div class="services-cta-banner" role="region" aria-label="Custom Project Commissions">
-          <div class="services-cta-glow"></div>
           <div class="services-cta-content">
             <div class="services-cta-text">
               <span class="services-cta-badge">AVAILABLE FOR COMMISSIONS '26</span>
@@ -824,8 +819,6 @@
     <!-- SECTION 7: FOOTER / LET'S TALK -->
     <footer class="section section-footer" id="contact" role="contentinfo" aria-label="Contact and Social Connect">
       <div class="footer-card">
-        <canvas id="footer-liquid-canvas" class="footer-liquid-canvas"></canvas>
-
         <div class="footer-main-content">
           <h2 class="footer-title" id="footer-title">LET'S TALK</h2>
 
@@ -876,6 +869,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js" defer></script>
+
+  <!-- Ember Stipple Generative Particle Background -->
+  <script src="ember-stipple.js" defer></script>
 
   <!-- Main JavaScript Application -->
   <script src="script.js" defer></script>

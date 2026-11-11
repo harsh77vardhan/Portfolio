@@ -4,8 +4,8 @@
    ========================================================================== */
 
 :root {
-  --bg-light: #080808;
-  --bg-dark: #080808;
+  --bg-light: transparent;
+  --bg-dark: #000000;
   --bg-card-dark: #12080a;
   --text-dark: #ffffff;
   --text-light: #f4f4f4;
@@ -32,7 +32,7 @@
 
 html {
   font-size: 16px;
-  background-color: var(--bg-dark);
+  background-color: #000000;
   color: #ffffff;
   font-family: var(--font-main);
   text-rendering: optimizeLegibility;
@@ -47,8 +47,20 @@ body {
   max-width: 100vw;
   width: 100%;
   position: relative;
-  background-color: var(--bg-dark);
+  background-color: #000000;
   color: #ffffff;
+}
+
+/* Ember Stipple Generative Particle Background Canvas */
+.ember-stipple-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  background-color: #000000;
 }
 
 
@@ -516,20 +528,6 @@ body.nav-dark-theme .social-icon {
   opacity: 0;
 }
 
-.hero-portrait-glow {
-  display: block;
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 95%;
-  height: 80%;
-  background: radial-gradient(ellipse at 50% 48%, rgba(255, 42, 59, 0.5) 0%, rgba(180, 15, 30, 0.25) 45%, transparent 72%);
-  filter: blur(45px);
-  z-index: -1;
-  pointer-events: none;
-}
-
 .hero-portrait-img {
   width: 100%;
   height: 100%;
@@ -627,44 +625,12 @@ body.nav-dark-theme .social-icon {
   min-height: 100vh;
   height: 100vh;
   width: 100%;
-  background-color: var(--bg-dark);
+  background-color: transparent;
   color: var(--text-light);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* Dark Matrix Backdrop with bottom gradient feather */
-.about-backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  overflow: hidden;
-  mask-image: linear-gradient(to bottom, #000000 0%, #000000 65%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, #000000 0%, #000000 65%, transparent 100%);
-  transition: opacity 0.5s ease;
-}
-
-.about-backdrop-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: contrast(120%) brightness(90%);
-  opacity: 0.85;
-  transform: scale(1.05);
-}
-
-.about-backdrop-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, rgba(35, 6, 10, 0.25) 0%, rgba(8, 8, 8, 0.75) 75%, #080808 100%);
 }
 
 .about-content-wrapper {
@@ -795,7 +761,7 @@ body.nav-dark-theme .social-icon {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  background: radial-gradient(ellipse 90% 40% at 50% 0%, rgba(255, 42, 59, 0.06) 0%, var(--bg-dark) 70%);
+  background: transparent;
   color: var(--text-light);
   overflow: hidden;
   padding: 3rem 3rem 6rem;
@@ -1970,18 +1936,6 @@ body.nav-dark-theme .social-icon {
   -webkit-backdrop-filter: blur(16px);
 }
 
-.services-cta-glow {
-  position: absolute;
-  top: -40%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 70%;
-  height: 120px;
-  background: radial-gradient(ellipse at center, rgba(255, 42, 59, 0.3) 0%, transparent 70%);
-  pointer-events: none;
-  filter: blur(30px);
-}
-
 .services-cta-content {
   position: relative;
   z-index: 2;
@@ -2194,7 +2148,7 @@ body.nav-dark-theme .social-icon {
 .section-footer {
   width: 100%;
   padding: 0 2rem 2rem;
-  background-color: var(--bg-dark);
+  background-color: transparent;
 }
 
 .footer-card {
@@ -2202,7 +2156,9 @@ body.nav-dark-theme .social-icon {
   max-width: 1600px;
   margin: 0 auto;
   border-radius: 32px;
-  background-color: #0c0406;
+  background-color: rgba(12, 4, 6, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 42, 59, 0.25);
   color: #ffffff;
   padding: 8rem 3rem 3rem;
@@ -2213,17 +2169,6 @@ body.nav-dark-theme .social-icon {
   position: relative;
   overflow: hidden;
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95), 0 0 50px rgba(255, 42, 59, 0.18);
-}
-
-.footer-liquid-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 32px;
-  pointer-events: none;
-  z-index: 1;
 }
 
 .footer-card::after {
